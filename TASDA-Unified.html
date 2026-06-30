@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Official website and administration system of the Office of the District Chief Executive, Tatale District, Northern Region, Ghana.">
+<title>TASDA — Office of the DCE, Tatale District</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ════════ TOKENS ════════ */
+:root{
+  --green:#006B3F; --green-dark:#004d2c; --green-light:#e8f5ee;
+  --gold:#FCD116; --gold-dark:#d4a800;
+  --red:#CE1126; --navy:#0D1F3C;
+  --white:#FFFFFF; --gray-light:#F4F6F8; --gray:#E2E6EA; --gray-mid:#9AA3AE;
+  --ink:#1A1A2E; --muted:#5A6473;
+  --radius:6px; --shadow:0 4px 24px rgba(0,0,0,.08); --shadow-lg:0 16px 48px rgba(0,0,0,.16);
+  --bg:var(--white); --surface:var(--white); --text:var(--ink); --text-muted:var(--muted); --border:var(--gray); --surface-alt:var(--gray-light);
+}
+html.dark{
+  --bg:#0F1720; --surface:#172230; --text:#EDEFF2; --text-muted:#9AA3AE; --border:#2A3645; --surface-alt:#1B2733;
+  --green-light:#10301F; --gray-light:#1B2733; --gray:#2A3645;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;color:var(--text);background:var(--bg);transition:background .2s,color .2s}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--surface-alt)}::-webkit-scrollbar-thumb{background:var(--green);border-radius:3px}
+a{color:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* ════════ SHARED COMPONENTS ════════ */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;border:none;text-decoration:none;transition:all .2s;white-space:nowrap}
+.btn-sm{padding:8px 14px;font-size:12.5px}
+.btn-gold{background:var(--gold);color:#1A1A1A}
+.btn-gold:hover{background:var(--gold-dark);transform:translateY(-1px)}
+.btn-green{background:var(--green);color:var(--white)}
+.btn-green:hover{background:var(--green-dark);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--green);border:1.5px solid var(--green)}
+.btn-outline:hover{background:var(--green-light)}
+.btn-outline-white{background:transparent;color:var(--white);border:2px solid rgba(255,255,255,.5)}
+.btn-outline-white:hover{background:rgba(255,255,255,.12);border-color:var(--white)}
+.btn-danger{background:var(--red);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--text-muted);border:1.5px solid var(--border)}
+.btn-ghost:hover{border-color:var(--green);color:var(--green)}
+
+.card{background:var(--surface);border-radius:12px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--green)}
+
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:11.5px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border .2s;background:var(--surface-alt);color:var(--text)}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--green)}
+.form-group textarea{resize:vertical;min-height:90px}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-success{display:none;background:#D4EDDA;color:#155724;padding:13px 16px;border-radius:var(--radius);font-size:13.5px;font-weight:500;margin-top:10px}
+
+.badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.03em}
+.badge-green{background:#D4EDDA;color:#155724}.badge-yellow{background:#FFF3CD;color:#856404}
+.badge-red{background:#F8D7DA;color:#721C24}.badge-blue{background:#D1ECF1;color:#0C5460}.badge-grey{background:var(--gray);color:var(--text-muted)}
+
+.progress-bar{background:var(--gray);border-radius:20px;height:7px;overflow:hidden}
+.progress-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--green),#00A859);transition:width .5s}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--surface);border-radius:12px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg)}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--green)}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted);line-height:1}
+.modal-body{padding:24px}
+
+.section{padding:72px 0}
+.section-alt{background:var(--surface-alt)}
+.section-header{text-align:center;margin-bottom:48px}
+.section-eyebrow{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--green);background:var(--green-light);padding:5px 14px;border-radius:20px;margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);font-weight:700;color:var(--text);margin-bottom:10px;line-height:1.2}
+.section-desc{font-size:14.5px;color:var(--text-muted);max-width:560px;margin:0 auto;line-height:1.7}
+.divider{width:56px;height:3px;background:var(--gold);margin:14px auto 0;border-radius:2px}
+
+.float-wa{position:fixed;bottom:26px;right:26px;z-index:800;width:50px;height:50px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,.4);transition:all .2s}
+.float-wa:hover{transform:scale(1.1)}
+.back-top{position:fixed;bottom:84px;right:26px;z-index:800;width:38px;height:38px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--white);font-size:15px;cursor:pointer;box-shadow:var(--shadow);transition:all .2s;opacity:0;pointer-events:none}
+.back-top.visible{opacity:1;pointer-events:all}
+
+/* ════════ ADMIN LOGIN (shared modal) ════════ */
+.login-box{background:var(--surface);border-radius:8px;padding:44px 38px;width:100%;max-width:400px;box-shadow:var(--shadow-lg)}
+.login-crest{width:54px;height:54px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;margin:0 auto 16px}
+.login-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;text-align:center;color:var(--green);line-height:1.3;margin-bottom:4px}
+.login-sub{text-align:center;color:var(--text-muted);font-size:12.5px;margin-bottom:28px}
+.login-error{color:var(--red);font-size:13px;text-align:center;margin-top:10px;display:none}
+
+/* ════════ PUBLIC APP ════════ */
+#public-app .topbar{background:var(--navy);color:rgba(255,255,255,.85);font-size:12px;padding:8px 0}
+#public-app .topbar-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+#public-app .topbar-left{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+#public-app .topbar-item{display:flex;align-items:center;gap:6px}
+#public-app .topbar-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+#public-app .topbar-right button,#public-app .topbar-right a{background:none;border:none;color:rgba(255,255,255,.75);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;text-decoration:none;font-family:inherit;transition:color .2s}
+#public-app .topbar-right button:hover,#public-app .topbar-right a:hover{color:var(--gold)}
+.search-box{position:relative}
+.search-box input{padding:5px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:var(--white);font-size:12px;width:130px;outline:none}
+.search-box input::placeholder{color:rgba(255,255,255,.5)}
+.search-results{position:absolute;top:32px;right:0;background:var(--surface);border-radius:8px;box-shadow:var(--shadow-lg);min-width:220px;z-index:50;display:none;overflow:hidden}
+.search-results.show{display:block}
+.search-results a{display:block;padding:10px 14px;font-size:13px;color:var(--text);text-decoration:none;border-bottom:1px solid var(--border)}
+.search-results a:last-child{border-bottom:none}
+.search-results a:hover{background:var(--green-light)}
+
+header.site-header{background:var(--surface);border-bottom:3px solid var(--gold);position:sticky;top:0;z-index:900;box-shadow:0 2px 16px rgba(0,0,0,.06)}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo-group{display:flex;align-items:center;gap:13px}
+.logo-crest{width:48px;height:48px;background:linear-gradient(135deg,var(--green),var(--green-dark));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.logo-title{font-family:'Playfair Display',serif;font-size:14.5px;font-weight:700;color:var(--green);line-height:1.2}
+.logo-sub{font-size:9.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em}
+nav.main-nav{display:flex;align-items:center;gap:1px}
+.nav-link{font-size:12.5px;font-weight:500;color:var(--text);text-decoration:none;padding:8px 10px;border-radius:4px;transition:all .2s;cursor:pointer;white-space:nowrap}
+.nav-link:hover,.nav-link.active{color:var(--green);background:var(--green-light)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px}
+.hamburger span{width:23px;height:2px;background:var(--text);border-radius:2px}
+.mobile-nav{display:none;position:fixed;inset:0;background:var(--surface);z-index:1500;padding:24px;overflow-y:auto;flex-direction:column;gap:6px}
+.mobile-nav.open{display:flex}
+.mobile-nav-close{align-self:flex-end;font-size:28px;cursor:pointer;color:var(--text-muted);background:none;border:none}
+.mobile-nav a{font-size:16px;font-weight:500;color:var(--text);text-decoration:none;padding:13px 0;border-bottom:1px solid var(--border);cursor:pointer}
+
+.news-ticker{background:var(--red);color:var(--white);padding:9px 0;overflow:hidden}
+.ticker-inner{display:flex;align-items:center}
+.ticker-label{background:var(--navy);color:var(--gold);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:4px 14px;white-space:nowrap;margin-right:20px;border-radius:3px;flex-shrink:0}
+.ticker-content{overflow:hidden;flex:1}
+.ticker-scroll{display:inline-block;white-space:nowrap;animation:scroll-left 28s linear infinite;font-size:12.5px;font-weight:500}
+@keyframes scroll-left{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+
+.emergency-bar{background:var(--red);color:var(--white);padding:10px 0;font-size:13px}
+.emergency-bar .container{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;text-align:center}
+.emergency-bar strong{color:var(--gold)}
+
+.hero{background:linear-gradient(135deg,var(--green-dark) 0%,var(--green) 50%,#008A52 100%);min-height:88vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-inner{max-width:1200px;margin:0 auto;padding:70px 24px;display:grid;grid-template-columns:1fr 400px;gap:56px;align-items:center;position:relative;z-index:1}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(252,209,22,.15);border:1px solid rgba(252,209,22,.3);border-radius:20px;padding:6px 15px;font-size:11.5px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:18px}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(28px,3.8vw,50px);font-weight:900;color:var(--white);line-height:1.15;margin-bottom:14px}
+.hero-title span{color:var(--gold)}
+.hero-tagline{font-size:15px;color:rgba(255,255,255,.78);line-height:1.6;margin-bottom:28px;font-style:italic;border-left:3px solid var(--gold);padding-left:15px}
+.hero-stats{display:flex;gap:28px;margin-bottom:32px;flex-wrap:wrap}
+.hero-stat-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gold)}
+.hero-stat-label{font-size:10.5px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.07em}
+.hero-ctas{display:flex;gap:11px;flex-wrap:wrap}
+.hero-card{background:rgba(255,255,255,.08);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:32px;text-align:center}
+.dce-portrait{width:140px;height:140px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#f0b800);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:48px;border:4px solid rgba(255,255,255,.3)}
+.dce-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--white);margin-bottom:3px}
+.dce-title{font-size:12.5px;color:rgba(255,255,255,.7);margin-bottom:18px}
+.hero-badges{display:flex;justify-content:center;gap:7px;margin-top:18px;flex-wrap:wrap}
+.hero-badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 11px;font-size:10.5px;color:rgba(255,255,255,.8)}
+
+.stats-bar{background:var(--navy);padding:36px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.1)}
+.stat-block{background:var(--navy);padding:26px 22px;text-align:center}
+.stat-block-num{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--gold);line-height:1}
+.stat-block-label{font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.09em;margin-top:6px}
+
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.about-img{background:linear-gradient(135deg,var(--green-light),var(--gray));border-radius:12px;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center;font-size:76px;border:3px solid var(--border)}
+.about-content h2{font-family:'Playfair Display',serif;font-size:29px;font-weight:700;color:var(--text);margin-bottom:6px}
+.about-content .subtitle{color:var(--green);font-weight:600;font-size:13px;margin-bottom:18px;text-transform:uppercase;letter-spacing:.06em}
+.about-content p{color:var(--text-muted);line-height:1.8;font-size:14.5px;margin-bottom:14px}
+.about-values{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.value-chip{background:var(--green-light);border-radius:6px;padding:9px 13px;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--green)}
+
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:32px}
+.filter-btn{padding:8px 17px;border-radius:20px;border:2px solid var(--border);background:var(--surface);font-size:12.5px;font-weight:600;cursor:pointer;transition:all .2s;color:var(--text-muted)}
+.filter-btn.active,.filter-btn:hover{background:var(--green);border-color:var(--green);color:var(--white)}
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.project-card{background:var(--surface);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);transition:all .25s;border:1px solid var(--border)}
+.project-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.project-img{height:170px;display:flex;align-items:center;justify-content:center;font-size:44px;position:relative}
+.project-img.edu{background:linear-gradient(135deg,#E3F2FD,#BBDEFB)}.project-img.health{background:linear-gradient(135deg,#FCE4EC,#F8BBD0)}
+.project-img.road{background:linear-gradient(135deg,#FFF3E0,#FFE0B2)}.project-img.water{background:linear-gradient(135deg,#E0F7FA,#B2EBF2)}
+.project-img.agric{background:linear-gradient(135deg,var(--green-light),#C8E6C9)}.project-img.energy{background:linear-gradient(135deg,#FFF8E1,#FFECB3)}
+.project-badge{position:absolute;top:11px;right:11px;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase}
+.project-body{padding:18px}
+.project-sector{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:5px}
+.project-name{font-family:'Playfair Display',serif;font-size:15.5px;font-weight:700;color:var(--text);margin-bottom:7px;line-height:1.3}
+.project-desc{font-size:12.5px;color:var(--text-muted);line-height:1.55;margin-bottom:13px}
+.project-meta{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;margin-bottom:11px}
+.project-budget{color:var(--green);font-weight:600}
+.progress-label{font-size:10.5px;color:var(--text-muted);display:flex;justify-content:space-between;margin-top:4px}
+
+.news-grid{display:grid;grid-template-columns:2fr 1fr;gap:30px}
+.news-card-lg{background:var(--surface);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border)}
+.news-img-lg{height:240px;background:linear-gradient(135deg,var(--green-light),var(--gray));display:flex;align-items:center;justify-content:center;font-size:58px;position:relative}
+.news-cat-tag{position:absolute;top:14px;left:14px;background:var(--green);color:var(--white);font-size:10.5px;font-weight:700;padding:4px 11px;border-radius:20px}
+.news-body-lg{padding:22px}
+.news-meta{display:flex;align-items:center;gap:12px;margin-bottom:9px;font-size:11.5px;color:var(--text-muted)}
+.news-title-lg{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:9px;line-height:1.3}
+.news-excerpt{font-size:13.5px;color:var(--text-muted);line-height:1.65;margin-bottom:14px}
+.news-sidebar{display:flex;flex-direction:column;gap:14px}
+.news-card-sm{background:var(--surface);border-radius:10px;padding:14px;box-shadow:var(--shadow);border:1px solid var(--border);display:flex;gap:13px}
+.news-sm-img{width:58px;height:58px;border-radius:8px;background:linear-gradient(135deg,var(--green-light),var(--gray));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.news-sm-cat{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--green);margin-bottom:3px}
+.news-sm-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:3px}
+.news-sm-date{font-size:10.5px;color:var(--text-muted)}
+
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.service-card{background:var(--surface);border-radius:12px;padding:26px;border:2px solid var(--border);transition:all .25s;cursor:pointer;text-align:left}
+.service-card:hover{border-color:var(--green);transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.service-icon{font-size:32px;margin-bottom:14px}
+.service-title{font-size:14.5px;font-weight:700;color:var(--text);margin-bottom:7px}
+.service-desc{font-size:12.5px;color:var(--text-muted);line-height:1.6}
+
+.dept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.dept-card{background:var(--surface);border-radius:10px;padding:20px;border:1px solid var(--border)}
+.dept-icon{font-size:26px;margin-bottom:10px}
+.dept-name{font-size:13.5px;font-weight:700;color:var(--text);margin-bottom:4px}
+.dept-head{font-size:11.5px;color:var(--green);font-weight:600;margin-bottom:5px}
+.dept-desc{font-size:11.5px;color:var(--text-muted);line-height:1.5}
+
+.events-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.event-card{background:var(--surface);border-radius:12px;padding:22px;border-left:4px solid var(--green);box-shadow:var(--shadow)}
+.event-date-block{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+.event-date-box{background:var(--green);color:var(--white);border-radius:8px;padding:7px 13px;text-align:center;flex-shrink:0}
+.event-day{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;line-height:1}
+.event-month{font-size:10px;font-weight:600;text-transform:uppercase}
+.event-type{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:5px}
+.event-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:5px;line-height:1.3}
+.event-loc{font-size:11.5px;color:var(--text-muted)}
+
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.gallery-item{border-radius:8px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;position:relative;transition:transform .2s}
+.gallery-item:hover{transform:scale(1.04)}
+.gallery-item:nth-child(1){grid-column:span 2;grid-row:span 2;font-size:60px}
+.g1{background:linear-gradient(135deg,#E8F5E9,#C8E6C9)}.g2{background:linear-gradient(135deg,#E3F2FD,#BBDEFB)}
+.g3{background:linear-gradient(135deg,#FFF3E0,#FFE0B2)}.g4{background:linear-gradient(135deg,#FCE4EC,#F8BBD0)}
+.g5{background:linear-gradient(135deg,#F3E5F5,#E1BEE7)}.g6{background:linear-gradient(135deg,#E0F7FA,#B2EBF2)}.g7{background:linear-gradient(135deg,#FFF8E1,#FFECB3)}
+
+.partners-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}
+.partner-card{border:2px solid var(--border);border-radius:10px;padding:18px;display:flex;flex-direction:column;align-items:center;gap:9px}
+.partner-logo{font-size:30px}
+.partner-name{font-size:11.5px;font-weight:600;color:var(--text);text-align:center;line-height:1.3}
+.partner-type{font-size:9.5px;color:var(--text-muted);text-transform:uppercase}
+
+.staff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.staff-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.staff-avatar{width:64px;height:64px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px}
+.staff-name{font-size:13.5px;font-weight:700;color:var(--text)}
+.staff-role{font-size:11.5px;color:var(--green);font-weight:600;margin:3px 0 8px}
+.staff-contact{font-size:11.5px;color:var(--text-muted)}
+
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px}
+.contact-item{display:flex;gap:13px;margin-bottom:18px;align-items:flex-start}
+.contact-icon{width:42px;height:42px;background:var(--green-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.contact-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-muted);margin-bottom:2px}
+.contact-value{font-size:13.5px;color:var(--text);font-weight:500}
+.whatsapp-btn{display:inline-flex;align-items:center;gap:8px;background:#25D366;color:var(--white);padding:11px 18px;border-radius:var(--radius);font-weight:600;font-size:13.5px;text-decoration:none;margin-top:14px}
+.map-block{background:linear-gradient(135deg,var(--green-light),var(--gray));height:260px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:44px;margin-top:18px;flex-direction:column;gap:8px}
+
+.newsletter-section{background:linear-gradient(135deg,var(--navy) 0%,#1A3A6B 100%);padding:52px 0}
+.newsletter-inner{max-width:580px;margin:0 auto;padding:0 24px;text-align:center}
+.newsletter-inner h3{font-family:'Playfair Display',serif;font-size:25px;font-weight:700;color:var(--white);margin-bottom:7px}
+.newsletter-inner p{color:rgba(255,255,255,.7);font-size:14px;margin-bottom:20px}
+.newsletter-form{display:flex;gap:10px}
+.newsletter-form input{flex:1;padding:12px 16px;border-radius:var(--radius);border:none;font-size:13.5px;outline:none}
+.newsletter-form button{padding:12px 20px;background:var(--gold);color:#1A1A1A;border:none;border-radius:var(--radius);font-weight:700;font-size:13.5px;cursor:pointer}
+
+footer.site-footer{background:var(--navy);color:rgba(255,255,255,.8);padding:54px 0 0}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;margin-bottom:42px}
+.footer-brand-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--white)}
+.footer-brand-sub{font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+.footer-brand-desc{font-size:12.5px;line-height:1.7;color:rgba(255,255,255,.6);margin-bottom:18px}
+.footer-socials{display:flex;gap:9px}
+.social-btn{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:13px;text-decoration:none;color:var(--white)}
+.footer-col h4{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:14px}
+.footer-col a{display:block;font-size:12.5px;color:rgba(255,255,255,.6);text-decoration:none;margin-bottom:9px;cursor:pointer}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:11.5px;color:rgba(255,255,255,.4)}
+.footer-bottom a{color:rgba(255,255,255,.4);text-decoration:none;cursor:pointer}
+.staff-login-link{color:var(--gold)!important;font-weight:600}
+
+.page-section{display:none}
+.page-section.active{display:block}
+#home-sections{display:block}
+
+/* ════════ ADMIN APP ════════ */
+#admin-app{display:flex;min-height:100vh}
+#admin-app .sidebar{width:240px;min-height:100vh;background:var(--navy);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100}
+#admin-app .sidebar-brand{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+#admin-app .brand-logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--gold)}
+#admin-app .brand-sub{font-size:9.5px;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+#admin-app .sidebar-nav{flex:1;padding:14px 0;overflow-y:auto}
+#admin-app .nav-section-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:12px 20px 4px}
+#admin-app .a-nav-item{display:flex;align-items:center;gap:11px;padding:10px 20px;cursor:pointer;color:rgba(255,255,255,.7);font-size:13.5px;font-weight:500;transition:all .15s;border-left:3px solid transparent}
+#admin-app .a-nav-item:hover{background:rgba(255,255,255,.06);color:var(--white)}
+#admin-app .a-nav-item.active{background:rgba(252,209,22,.12);color:var(--gold);border-left-color:var(--gold)}
+#admin-app .nav-icon{font-size:15px;width:18px;text-align:center}
+#admin-app .sidebar-user{padding:14px 20px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:11px}
+#admin-app .user-avatar{width:34px;height:34px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--navy);flex-shrink:0}
+#admin-app .user-name{font-size:12.5px;font-weight:600;color:var(--white)}
+#admin-app .user-role{font-size:10.5px;color:rgba(255,255,255,.45)}
+#admin-app .btn-logout{background:none;border:none;color:rgba(255,255,255,.4);font-size:17px;cursor:pointer;margin-left:auto}
+#admin-app .a-main{margin-left:240px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+#admin-app .a-topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:15px 30px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+#admin-app .a-topbar-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--green)}
+#admin-app .a-content{padding:30px;flex:1}
+#admin-app .a-page{display:none}
+#admin-app .a-page.active{display:block}
+#admin-app .stats-grid-admin{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin-bottom:28px}
+#admin-app .stat-card{background:var(--surface);border-radius:8px;padding:22px;border-left:4px solid var(--gold);box-shadow:var(--shadow)}
+#admin-app .stat-card.green-b{border-left-color:var(--green)}
+#admin-app .stat-card.red-b{border-left-color:var(--red)}
+#admin-app .stat-card.navy-b{border-left-color:var(--navy)}
+#admin-app .stat-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted)}
+#admin-app .stat-value{font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:600;color:var(--green);margin:5px 0 2px}
+#admin-app .stat-sub{font-size:11.5px;color:var(--text-muted)}
+#admin-app .two-col{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+#admin-app .table-wrap{overflow-x:auto}
+#admin-app table{width:100%;border-collapse:collapse;font-size:13.5px}
+#admin-app th{background:var(--surface-alt);color:var(--text-muted);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:9px 13px;text-align:left;border-bottom:2px solid var(--border)}
+#admin-app td{padding:11px 13px;border-bottom:1px solid var(--border);vertical-align:middle}
+#admin-app .activity-item{display:flex;gap:13px;padding:11px 0;border-bottom:1px solid var(--border)}
+#admin-app .activity-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px}
+#admin-app .activity-dot.green-d{background:var(--green)}.activity-dot.red-d{background:var(--red)}
+#admin-app .activity-text{font-size:12.5px;line-height:1.5}
+#admin-app .activity-time{font-size:10.5px;color:var(--text-muted);margin-top:2px}
+#admin-app .schedule-item{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+#admin-app .schedule-time{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--gold-dark);font-weight:600;width:62px;flex-shrink:0;padding-top:2px}
+#admin-app .schedule-title{font-size:13.5px;font-weight:600;color:var(--text)}
+#admin-app .schedule-loc{font-size:11.5px;color:var(--text-muted);margin-top:2px}
+#admin-app .ai-output{background:linear-gradient(135deg,var(--navy) 0%,#1A3A6B 100%);border-radius:8px;padding:22px;color:var(--white);font-size:13.5px;line-height:1.7;min-height:110px;white-space:pre-wrap;word-break:break-word}
+#admin-app .ai-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:9px;display:flex;align-items:center;gap:8px}
+#admin-app .ai-spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#admin-app .complaint-card{border:1px solid var(--border);border-radius:8px;padding:17px;margin-bottom:13px}
+#admin-app .complaint-top{display:flex;align-items:flex-start;justify-content:space-between;gap:11px;margin-bottom:7px}
+#admin-app .complaint-name{font-weight:600;font-size:13.5px}
+#admin-app .complaint-community{font-size:11.5px;color:var(--text-muted)}
+#admin-app .complaint-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin:7px 0}
+#admin-app .complaint-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+#admin-app .welcome-banner{background:linear-gradient(135deg,var(--green) 0%,#008A52 100%);border-radius:10px;padding:26px 30px;margin-bottom:26px;color:var(--white);display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+#admin-app .welcome-banner h2{font-family:'Playfair Display',serif;font-size:21px;font-weight:700}
+#admin-app .welcome-banner p{font-size:13px;color:rgba(255,255,255,.7);margin-top:3px}
+#admin-app .mobile-toggle-admin{display:none;position:fixed;top:14px;left:14px;z-index:200;background:var(--navy);color:white;border:none;border-radius:3px;width:36px;height:36px;font-size:17px;cursor:pointer}
+#admin-app .live-feed-badge{background:#D4EDDA;color:#155724;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px}
+#admin-app .live-dot{width:6px;height:6px;border-radius:50%;background:#28a745;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ════════ RESPONSIVE ════════ */
+@media(max-width:1024px){
+  .projects-grid,.dept-grid,.staff-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .partners-grid{grid-template-columns:repeat(3,1fr)}
+  #admin-app .two-col{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  nav.main-nav{display:none}
+  .hamburger{display:flex}
+  .hero-inner{grid-template-columns:1fr;text-align:center}
+  .hero-card{max-width:320px;margin:0 auto}
+  .hero-stats,.hero-ctas{justify-content:center}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .about-grid,.news-grid,.contact-grid{grid-template-columns:1fr}
+  .projects-grid,.events-grid,.services-grid,.staff-grid{grid-template-columns:1fr}
+  .dept-grid{grid-template-columns:repeat(2,1fr)}
+  .gallery-grid{grid-template-columns:repeat(2,1fr)}
+  .gallery-item:nth-child(1){grid-column:span 1;grid-row:span 1}
+  .footer-grid{grid-template-columns:1fr}
+  .partners-grid{grid-template-columns:repeat(2,1fr)}
+  .newsletter-form{flex-direction:column}
+  .form-row-2{grid-template-columns:1fr}
+  #admin-app .sidebar{transform:translateX(-100%);transition:transform .25s}
+  #admin-app .sidebar.open{transform:translateX(0)}
+  #admin-app .a-main{margin-left:0}
+  #admin-app .a-content{padding:16px}
+  #admin-app .a-topbar{padding:14px 16px 14px 56px}
+  #admin-app .mobile-toggle-admin{display:flex;align-items:center;justify-content:center}
+  #admin-app .welcome-banner{flex-direction:column}
+  #admin-app .stats-grid-admin{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════ ADMIN LOGIN MODAL ════════ -->
+<div class="modal-overlay" id="admin-login-overlay">
+  <div class="login-box">
+    <div class="login-crest">🏛️</div>
+    <div class="login-title">Staff &amp; DCE Login</div>
+    <div class="login-sub">TASDA — Tatale District Administration</div>
+    <div class="form-group">
+      <label>Role</label>
+      <select id="login-role">
+        <option value="">Select your role</option>
+        <option value="dce">District Chief Executive (DCE)</option>
+        <option value="it">IT Personnel / Admin</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Enter password">
+    </div>
+    <button class="btn btn-green" style="width:100%;justify-content:center" onclick="doLogin()">Sign In →</button>
+    <button class="btn btn-ghost" style="width:100%;justify-content:center;margin-top:8px" onclick="closeModal('admin-login-overlay')">Cancel</button>
+    <div class="login-error" id="login-error">Invalid credentials. Try again.</div>
+    <div style="margin-top:14px;font-size:11px;color:var(--text-muted);text-align:center">Demo: DCE → dce123 &nbsp;|&nbsp; IT → it123</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════ -->
+<!-- PUBLIC APP                                    -->
+<!-- ════════════════════════════════════════════ -->
+<div id="public-app">
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-left">
+      <div class="topbar-item">🏛️ <span>Tatale District Assembly</span></div>
+      <div class="topbar-item">🕐 <span id="live-time">--:--</span></div>
+      <div class="topbar-item">🌤️ <span id="weather-display">Loading weather…</span></div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <input type="text" id="site-search" placeholder="🔍 Search site..." oninput="doSearch(this.value)" onblur="setTimeout(()=>document.getElementById('search-results').classList.remove('show'),200)">
+        <div class="search-results" id="search-results"></div>
+      </div>
+      <button onclick="toggleLang()" id="lang-btn">🌐 EN</button>
+      <button onclick="toggleDark()" id="dark-btn">🌙 Dark</button>
+      <button class="staff-login-link" onclick="openModal('admin-login-overlay')">🔐 Staff Login</button>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-group">
+      <div class="logo-crest">🏛️</div>
+      <div>
+        <div class="logo-title">Office of the District Chief Executive</div>
+        <div class="logo-sub">Tatale District · Northern Region · Ghana</div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a class="nav-link active" onclick="showSection('home',this)">Home</a>
+      <a class="nav-link" onclick="showSection('about',this)">About DCE</a>
+      <a class="nav-link" onclick="showSection('district',this)">District</a>
+      <a class="nav-link" onclick="showSection('projects',this)">Projects</a>
+      <a class="nav-link" onclick="showSection('news',this)">News</a>
+      <a class="nav-link" onclick="showSection('departments',this)">Departments</a>
+      <a class="nav-link" onclick="showSection('gallery',this)">Media</a>
+      <a class="nav-link" onclick="showSection('services',this)">Services</a>
+      <a class="nav-link" onclick="showSection('contact',this)">Contact</a>
+    </nav>
+    <div class="hamburger" onclick="toggleMobileNav()"><span></span><span></span><span></span></div>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-close" onclick="toggleMobileNav()">×</button>
+  <a onclick="showSection('home');toggleMobileNav()">🏠 Home</a>
+  <a onclick="showSection('about');toggleMobileNav()">👤 About DCE</a>
+  <a onclick="showSection('district');toggleMobileNav()">🏞 District Info</a>
+  <a onclick="showSection('projects');toggleMobileNav()">🏗️ Projects</a>
+  <a onclick="showSection('news');toggleMobileNav()">📰 News & Events</a>
+  <a onclick="showSection('departments');toggleMobileNav()">🏢 Departments</a>
+  <a onclick="showSection('gallery');toggleMobileNav()">🖼️ Media Gallery</a>
+  <a onclick="showSection('services');toggleMobileNav()">📋 Citizen Services</a>
+  <a onclick="showSection('staff');toggleMobileNav()">👥 Staff Directory</a>
+  <a onclick="showSection('investment');toggleMobileNav()">💼 Investment</a>
+  <a onclick="showSection('procurement');toggleMobileNav()">📑 Procurement &amp; Tenders</a>
+  <a onclick="showSection('downloads');toggleMobileNav()">📥 Downloads</a>
+  <a onclick="showSection('contact');toggleMobileNav()">📞 Contact</a>
+  <a onclick="openModal('admin-login-overlay');toggleMobileNav()">🔐 Staff Login</a>
+</div>
+
+<div class="news-ticker">
+  <div class="ticker-inner">
+    <div class="ticker-label">📢 Latest</div>
+    <div class="ticker-content"><div class="ticker-scroll" id="ticker-text">Loading announcements…</div></div>
+  </div>
+</div>
+
+<div class="emergency-bar" id="emergency-banner" style="display:none">
+  <div class="container">⚠️ <strong>Public Notice:</strong> <span id="emergency-text"></span></div>
+</div>
+
+<div id="home-sections">
+
+<section class="hero" id="home">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">🇬🇭 Official Government Website</div>
+      <h1 class="hero-title">Office of the<br><span>District Chief Executive</span><br>Tatale District</h1>
+      <p class="hero-tagline">"Leadership, Development and Service to the People."</p>
+      <div class="hero-stats">
+        <div><div class="hero-stat-num" id="hero-stat-projects">12+</div><div class="hero-stat-label">Active Projects</div></div>
+        <div><div class="hero-stat-num">48</div><div class="hero-stat-label">Communities</div></div>
+        <div><div class="hero-stat-num" id="hero-stat-budget">63%</div><div class="hero-stat-label">Budget Used</div></div>
+        <div><div class="hero-stat-num">2026</div><div class="hero-stat-label">Fiscal Year</div></div>
+      </div>
+      <div class="hero-ctas">
+        <a class="btn btn-gold" onclick="showSection('about')">👤 Meet the DCE</a>
+        <a class="btn btn-outline-white" onclick="showSection('projects')">🏗️ District Projects</a>
+        <a class="btn btn-outline-white" onclick="showSection('services')">📋 Citizen Services</a>
+      </div>
+    </div>
+    <div>
+      <div class="hero-card">
+        <div style="font-size:34px">🇬🇭</div>
+        <div style="font-size:10.5px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.12em;margin-bottom:14px">Republic of Ghana</div>
+        <div class="dce-portrait">👩‍💼</div>
+        <div class="dce-name" id="hero-dce-name">Hon. District Chief Executive</div>
+        <div class="dce-title">Tatale District, Northern Region</div>
+        <div class="hero-badges">
+          <div class="hero-badge">GES Compliant</div><div class="hero-badge">DACF Funded</div><div class="hero-badge">DA Approved</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PUBLIC DASHBOARD -->
+<div class="stats-bar">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-block"><div class="stat-block-num" id="pub-visitor-count">—</div><div class="stat-block-label">Visitors Today</div></div>
+      <div class="stat-block"><div class="stat-block-num" id="pub-completed-projects">—</div><div class="stat-block-label">Completed Projects</div></div>
+      <div class="stat-block"><div class="stat-block-num">48</div><div class="stat-block-label">Communities Served</div></div>
+      <div class="stat-block"><div class="stat-block-num" id="pub-open-complaints">—</div><div class="stat-block-label">Active Citizen Requests</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DCE MONTHLY MESSAGE -->
+<section class="section">
+  <div class="container">
+    <div class="card" style="display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center">
+      <div style="background:var(--green-light);border-radius:10px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:48px">🎥</div>
+      <div>
+        <div class="section-eyebrow" style="margin-bottom:10px">DCE's Monthly Message</div>
+        <h3 style="font-family:'Playfair Display',serif;font-size:20px;color:var(--text);margin-bottom:8px">A Word from the District Chief Executive — June 2026</h3>
+        <p style="font-size:13.5px;color:var(--text-muted);line-height:1.7">This month, we celebrate the completion of the Gbungbaliga JHS classroom block and continued progress on the Sanguli borehole project. I remain committed to transparent, people-centred governance for every community in our district.</p>
+        <a class="btn btn-outline btn-sm" style="margin-top:12px" onclick="showSection('news')">Read Full Update →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-header"><div class="section-eyebrow">Latest Updates</div><h2 class="section-title">News & Announcements</h2><div class="divider"></div></div>
+    <div class="news-grid">
+      <div class="news-card-lg">
+        <div class="news-img-lg">🏗️<div class="news-cat-tag">Development</div></div>
+        <div class="news-body-lg">
+          <div class="news-meta"><span>📅 June 25, 2026</span><span>✍️ DCE Press Office</span></div>
+          <div class="news-title-lg">DCE Commissions New Classroom Block in Gbungbaliga</div>
+          <div class="news-excerpt">The DCE officially commissioned a new 3-unit classroom block at Gbungbaliga JHS, funded through the District Assembly Common Fund, serving over 300 students.</div>
+          <a class="btn btn-outline btn-sm" onclick="showSection('news')">Read Full Story →</a>
+        </div>
+      </div>
+      <div class="news-sidebar">
+        <div class="news-card-sm"><div class="news-sm-img">💧</div><div><div class="news-sm-cat">Water</div><div class="news-sm-title">Sanguli Borehole 75% Complete</div><div class="news-sm-date">Jun 20, 2026</div></div></div>
+        <div class="news-card-sm"><div class="news-sm-img">🛣️</div><div><div class="news-sm-cat">Infrastructure</div><div class="news-sm-title">Nakpayili Road Rehabilitation Begins</div><div class="news-sm-date">Jun 15, 2026</div></div></div>
+        <div class="news-card-sm"><div class="news-sm-img">📊</div><div><div class="news-sm-cat">Finance</div><div class="news-sm-title">Q2 2026 Budget Performance Released</div><div class="news-sm-date">Jun 10, 2026</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header"><div class="section-eyebrow">We Serve You</div><h2 class="section-title">Citizen Services</h2><div class="divider"></div></div>
+    <div class="services-grid">
+      <div class="service-card" onclick="showSection('services')"><div class="service-icon">📢</div><div class="service-title">Submit a Complaint</div><div class="service-desc">Report issues directly to the DCE's office — tracked live by our admin team.</div></div>
+      <div class="service-card" onclick="showSection('services')"><div class="service-icon">📅</div><div class="service-title">Book Appointment</div><div class="service-desc">Schedule a meeting with the DCE or district officers.</div></div>
+      <div class="service-card" onclick="showSection('services')"><div class="service-icon">🔍</div><div class="service-title">Track Your Request</div><div class="service-desc">Enter your reference number to check status in real time.</div></div>
+      <div class="service-card" onclick="showSection('investment')"><div class="service-icon">💼</div><div class="service-title">Investment Opportunities</div><div class="service-desc">Explore sectors open for investment in Tatale District.</div></div>
+      <div class="service-card" onclick="showSection('procurement')"><div class="service-icon">📑</div><div class="service-title">Procurement &amp; Tenders</div><div class="service-desc">View open tenders and procurement notices.</div></div>
+      <div class="service-card" onclick="showSection('staff')"><div class="service-icon">👥</div><div class="service-title">Staff Directory</div><div class="service-desc">Find contact information for district officers.</div></div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /home-sections -->
+
+<!-- ABOUT -->
+<div class="page-section" id="section-about">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Leadership</div><h2 class="section-title">About the District Chief Executive</h2><div class="divider"></div></div>
+      <div class="about-grid">
+        <div class="about-img">👩‍💼</div>
+        <div class="about-content">
+          <h2 id="about-dce-name">Hon. District Chief Executive</h2>
+          <div class="subtitle">District Chief Executive — Tatale District</div>
+          <p>Committed to transformational leadership, accountable governance, and accelerated development of the Tatale District in the Northern Region of Ghana.</p>
+          <p><strong>Vision:</strong> A prosperous, self-reliant Tatale District where every citizen has equal access to opportunities and quality public services.</p>
+          <p><strong>Mission:</strong> To deliver efficient, transparent, people-centred governance promoting sustainable development across every community.</p>
+          <div class="about-values">
+            <div class="value-chip">✅ Transparency</div><div class="value-chip">🤝 Accountability</div>
+            <div class="value-chip">🌱 Sustainability</div><div class="value-chip">💪 Inclusiveness</div>
+          </div>
+          <div style="margin-top:22px"><a class="btn btn-green btn-sm" onclick="showSection('contact')">📞 Contact the DCE</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- DISTRICT INFO -->
+<div class="page-section" id="section-district">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Local Government</div><h2 class="section-title">About Tatale District</h2><div class="divider"></div></div>
+      <div class="services-grid">
+        <div class="service-card"><div class="service-icon">📍</div><div class="service-title">Location</div><div class="service-desc">Located in the Northern Region of Ghana, bordering Saboba and Chereponi districts.</div></div>
+        <div class="service-card"><div class="service-icon">👥</div><div class="service-title">Population</div><div class="service-desc">Over 48,000 people across 48 communities, predominantly farming families.</div></div>
+        <div class="service-card"><div class="service-icon">🏘️</div><div class="service-title">Communities</div><div class="service-desc">Key towns include Tatale, Sanguli, Nakpayili, and Gbungbaliga.</div></div>
+        <div class="service-card"><div class="service-icon">👑</div><div class="service-title">Traditional Authorities</div><div class="service-desc">Governed in partnership with local chiefs and traditional councils.</div></div>
+        <div class="service-card"><div class="service-icon">🌾</div><div class="service-title">Economic Activities</div><div class="service-desc">Agriculture is the primary livelihood — cereals, legumes, and livestock.</div></div>
+        <div class="service-card"><div class="service-icon">🏞</div><div class="service-title">Tourist Attractions</div><div class="service-desc">Scenic savanna landscapes and cultural festivals throughout the year.</div></div>
+      </div>
+      <div class="map-block" style="margin-top:30px">🗺️<span style="font-size:13px;color:var(--text-muted)">Interactive Map — Tatale District</span></div>
+    </div>
+  </section>
+</div>
+
+<!-- PROJECTS -->
+<div class="page-section" id="section-projects">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">District Development</div><h2 class="section-title">Projects & Budget Tracker</h2><p class="section-desc">Live data — synced directly with the District Assembly's internal project management system.</p><div class="divider"></div></div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="filterProjects('all',this)">All</button>
+        <button class="filter-btn" onclick="filterProjects('Water & Sanitation',this)">💧 Water</button>
+        <button class="filter-btn" onclick="filterProjects('Roads & Infrastructure',this)">🛣️ Roads</button>
+        <button class="filter-btn" onclick="filterProjects('Education',this)">📚 Education</button>
+        <button class="filter-btn" onclick="filterProjects('Health',this)">🏥 Health</button>
+        <button class="filter-btn" onclick="filterProjects('Agriculture',this)">🌾 Agriculture</button>
+      </div>
+      <div class="projects-grid" id="public-projects-grid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- NEWS -->
+<div class="page-section" id="section-news">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Stay Informed</div><h2 class="section-title">News, Events & Announcements</h2><div class="divider"></div></div>
+      <div style="margin-bottom:38px">
+        <div class="news-grid">
+          <div class="news-card-lg">
+            <div class="news-img-lg">🏗️<div class="news-cat-tag">Development</div></div>
+            <div class="news-body-lg">
+              <div class="news-meta"><span>📅 June 25, 2026</span><span>✍️ DCE Press Office</span></div>
+              <div class="news-title-lg">DCE Commissions New Classroom Block in Gbungbaliga</div>
+              <div class="news-excerpt">The DCE officially commissioned a new 3-unit classroom block at Gbungbaliga JHS, funded through DACF, serving over 300 students and reflecting our commitment to quality education.</div>
+            </div>
+          </div>
+          <div class="news-sidebar">
+            <div class="news-card-sm"><div class="news-sm-img">💧</div><div><div class="news-sm-cat">Water</div><div class="news-sm-title">Sanguli Borehole 75% Complete</div><div class="news-sm-date">Jun 20, 2026</div></div></div>
+            <div class="news-card-sm"><div class="news-sm-img">🛣️</div><div><div class="news-sm-cat">Infrastructure</div><div class="news-sm-title">Nakpayili Road Rehabilitation Begins</div><div class="news-sm-date">Jun 15, 2026</div></div></div>
+            <div class="news-card-sm"><div class="news-sm-img">📊</div><div><div class="news-sm-cat">Finance</div><div class="news-sm-title">Q2 2026 Budget — 63% Utilised</div><div class="news-sm-date">Jun 10, 2026</div></div></div>
+            <div class="news-card-sm"><div class="news-sm-img">🌾</div><div><div class="news-sm-cat">Agriculture</div><div class="news-sm-title">Farmers Receive Subsidised Fertilizer</div><div class="news-sm-date">Jun 5, 2026</div></div></div>
+          </div>
+        </div>
+      </div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:21px;color:var(--text);margin-bottom:18px">📅 Upcoming Events</h3>
+      <div class="events-grid">
+        <div class="event-card">
+          <div class="event-date-block"><div class="event-date-box"><div class="event-day">15</div><div class="event-month">Jul</div></div><div><div class="event-type">Town Hall</div><div class="event-title">District Town Hall Meeting — Tatale</div></div></div>
+          <div class="event-loc">📍 Tatale Community Centre · 10:00 AM</div>
+          <div style="margin-top:12px"><button class="btn btn-outline btn-sm" onclick="openModal('modal-register')">Register Attendance</button></div>
+        </div>
+        <div class="event-card">
+          <div class="event-date-block"><div class="event-date-box" style="background:var(--gold)"><div class="event-day" style="color:#1A1A1A">22</div><div class="event-month" style="color:#1A1A1A">Jul</div></div><div><div class="event-type">Government</div><div class="event-title">District Assembly General Meeting</div></div></div>
+          <div class="event-loc">📍 District Assembly Hall · 9:00 AM</div>
+          <div style="margin-top:12px"><button class="btn btn-outline btn-sm" onclick="openModal('modal-register')">Register Attendance</button></div>
+        </div>
+        <div class="event-card">
+          <div class="event-date-block"><div class="event-date-box" style="background:var(--red)"><div class="event-day">01</div><div class="event-month">Aug</div></div><div><div class="event-type">Community</div><div class="event-title">Nakpayili Community Durbar</div></div></div>
+          <div class="event-loc">📍 Nakpayili Town Centre · 8:00 AM</div>
+          <div style="margin-top:12px"><button class="btn btn-outline btn-sm" onclick="openModal('modal-register')">Register Attendance</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- DEPARTMENTS -->
+<div class="page-section" id="section-departments">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">District Assembly</div><h2 class="section-title">Departments & Units</h2><div class="divider"></div></div>
+      <div class="dept-grid" id="dept-grid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- GALLERY -->
+<div class="page-section" id="section-gallery">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Media Centre</div><h2 class="section-title">Photo & Video Gallery</h2><div class="divider"></div></div>
+      <div class="gallery-grid">
+        <div class="gallery-item g1">🏗️</div><div class="gallery-item g2">💧</div><div class="gallery-item g3">🛣️</div>
+        <div class="gallery-item g4">🏫</div><div class="gallery-item g5">🤝</div><div class="gallery-item g6">🌾</div><div class="gallery-item g7">🎉</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SERVICES -->
+<div class="page-section" id="section-services">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Citizen Services</div><h2 class="section-title">How Can We Help You?</h2><p class="section-desc">Submissions here are received instantly by our admin team.</p><div class="divider"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-bottom:36px">
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom:18px">📢 Submit a Complaint</h3>
+          <div class="form-row-2">
+            <div class="form-group"><label>Full Name</label><input type="text" id="pub-comp-name" placeholder="Your full name"></div>
+            <div class="form-group"><label>Phone</label><input type="text" id="pub-comp-phone" placeholder="0244..."></div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group"><label>Community</label><input type="text" id="pub-comp-community" placeholder="Your community"></div>
+            <div class="form-group"><label>Category</label>
+              <select id="pub-comp-cat"><option>Roads & Infrastructure</option><option>Water & Sanitation</option><option>Education</option><option>Health</option><option>Land Dispute</option><option>Market & Trade</option><option>Other</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea id="pub-comp-desc" placeholder="Describe your complaint..."></textarea></div>
+          <button class="btn btn-green" onclick="submitPublicComplaint()">Submit Complaint →</button>
+          <div class="form-success" id="pub-complaint-success">✅ Complaint submitted! Your reference: <strong id="pub-comp-ref"></strong></div>
+        </div>
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom:18px">📅 Book an Appointment</h3>
+          <div class="form-group"><label>Full Name</label><input type="text" placeholder="Your full name"></div>
+          <div class="form-group"><label>Meeting With</label><select><option>District Chief Executive</option><option>District Coordinating Director</option><option>Finance Department</option><option>Works Department</option></select></div>
+          <div class="form-row-2"><div class="form-group"><label>Date</label><input type="date"></div><div class="form-group"><label>Time</label><input type="time"></div></div>
+          <div class="form-group"><label>Purpose</label><textarea placeholder="Brief description..."></textarea></div>
+          <button class="btn btn-green" onclick="submitForm('appt-success')">Book Appointment →</button>
+          <div class="form-success" id="appt-success">✅ Appointment request received.</div>
+        </div>
+      </div>
+      <div class="card" style="max-width:500px">
+        <h3 class="card-title" style="margin-bottom:14px">🔍 Track Your Request</h3>
+        <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:14px">Enter your reference number for live status.</p>
+        <div style="display:flex;gap:10px">
+          <input type="text" placeholder="e.g. TDA-1023" id="track-input" style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:13.5px;outline:none;background:var(--surface-alt);color:var(--text)">
+          <button class="btn btn-green" onclick="trackRequest()">Track →</button>
+        </div>
+        <div id="track-result" style="margin-top:13px;display:none"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- STAFF DIRECTORY -->
+<div class="page-section" id="section-staff">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Our Team</div><h2 class="section-title">Staff Directory</h2><div class="divider"></div></div>
+      <div class="staff-grid" id="staff-grid"></div>
+    </div>
+  </section>
+</div>
+
+<!-- INVESTMENT -->
+<div class="page-section" id="section-investment">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Open for Business</div><h2 class="section-title">Investment Opportunities</h2><p class="section-desc">Tatale District welcomes investors in the following priority sectors.</p><div class="divider"></div></div>
+      <div class="services-grid">
+        <div class="service-card"><div class="service-icon">🌾</div><div class="service-title">Agribusiness</div><div class="service-desc">Fertile land for mechanised farming, processing, and agro-export ventures.</div></div>
+        <div class="service-card"><div class="service-icon">⚡</div><div class="service-title">Renewable Energy</div><div class="service-desc">High solar potential for off-grid power generation projects.</div></div>
+        <div class="service-card"><div class="service-icon">🚛</div><div class="service-title">Transport & Logistics</div><div class="service-desc">Strategic location for cross-border trade routes into Togo.</div></div>
+        <div class="service-card"><div class="service-icon">🏨</div><div class="service-title">Hospitality & Tourism</div><div class="service-desc">Untapped potential around savanna landscapes and cultural festivals.</div></div>
+        <div class="service-card"><div class="service-icon">⛏️</div><div class="service-title">Small-Scale Mining</div><div class="service-desc">Mineral exploration opportunities under regulated frameworks.</div></div>
+        <div class="service-card"><div class="service-icon">🏗️</div><div class="service-title">Infrastructure & Real Estate</div><div class="service-desc">Growing demand for housing and commercial development in Tatale township.</div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PROCUREMENT -->
+<div class="page-section" id="section-procurement">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Tenders</div><h2 class="section-title">Procurement & Tenders</h2><div class="divider"></div></div>
+      <div class="card-table">
+        <div class="card">
+          <div class="table-wrap">
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr style="background:var(--surface-alt)"><th style="padding:11px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted)">Tender Title</th><th style="padding:11px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted)">Category</th><th style="padding:11px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted)">Closing Date</th><th style="padding:11px;text-align:left;font-size:11px;text-transform:uppercase;color:var(--text-muted)">Status</th></tr></thead>
+              <tbody>
+                <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px">Supply of Office Equipment</td><td style="padding:11px">Goods</td><td style="padding:11px">July 20, 2026</td><td style="padding:11px"><span class="badge badge-green">Open</span></td></tr>
+                <tr style="border-bottom:1px solid var(--border)"><td style="padding:11px">Construction of CHPS Compound — Tatale</td><td style="padding:11px">Works</td><td style="padding:11px">August 5, 2026</td><td style="padding:11px"><span class="badge badge-green">Open</span></td></tr>
+                <tr><td style="padding:11px">Borehole Maintenance Services</td><td style="padding:11px">Services</td><td style="padding:11px">June 30, 2026</td><td style="padding:11px"><span class="badge badge-grey">Closed</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- DOWNLOADS -->
+<div class="page-section" id="section-downloads">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Resources</div><h2 class="section-title">Downloads & Documents</h2><div class="divider"></div></div>
+      <div class="services-grid">
+        <div class="service-card"><div class="service-icon">📋</div><div class="service-title">Annual Report 2025</div><div class="service-desc">Full district performance review.</div><div style="margin-top:10px"><span class="btn btn-green btn-sm">📥 Download</span></div></div>
+        <div class="service-card"><div class="service-icon">💰</div><div class="service-title">Budget Statement 2026</div><div class="service-desc">Approved revenue and expenditure plan.</div><div style="margin-top:10px"><span class="btn btn-green btn-sm">📥 Download</span></div></div>
+        <div class="service-card"><div class="service-icon">📜</div><div class="service-title">Assembly Minutes</div><div class="service-desc">Official meeting minutes.</div><div style="margin-top:10px"><span class="btn btn-green btn-sm">📥 Download</span></div></div>
+        <div class="service-card"><div class="service-icon">📑</div><div class="service-title">Application Forms</div><div class="service-desc">Service request and permit forms.</div><div style="margin-top:10px"><span class="btn btn-green btn-sm">📥 Download</span></div></div>
+        <div class="service-card"><div class="service-icon">🗺️</div><div class="service-title">Development Plan</div><div class="service-desc">Medium-term plan 2024–2028.</div><div style="margin-top:10px"><span class="btn btn-green btn-sm">📥 Download</span></div></div>
+        <div class="service-card"><div class="service-icon">🔒</div><div class="service-title">Privacy Policy</div><div class="service-desc">How we handle your data.</div><div style="margin-top:10px"><span class="btn btn-outline btn-sm" onclick="showSection('privacy')">View Policy</span></div></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- PRIVACY -->
+<div class="page-section" id="section-privacy">
+  <section class="section" style="padding-top:54px">
+    <div class="container" style="max-width:760px">
+      <div class="section-header"><h2 class="section-title">Privacy Policy</h2><div class="divider"></div></div>
+      <div class="card">
+        <p style="font-size:13.5px;color:var(--text-muted);line-height:1.8;margin-bottom:14px">The Office of the District Chief Executive, Tatale District, is committed to protecting the privacy of citizens who use this website. Information submitted via complaint, appointment, or contact forms is used solely to respond to your request and improve district services.</p>
+        <p style="font-size:13.5px;color:var(--text-muted);line-height:1.8;margin-bottom:14px">We do not sell or share personal information with third parties. All forms are protected against spam and unauthorised access. This site uses HTTPS encryption and standard government security practices to safeguard your data.</p>
+        <p style="font-size:13.5px;color:var(--text-muted);line-height:1.8">For questions about this policy, contact the District Assembly office directly.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- CONTACT -->
+<div class="page-section" id="section-contact">
+  <section class="section" style="padding-top:54px">
+    <div class="container">
+      <div class="section-header"><div class="section-eyebrow">Get In Touch</div><h2 class="section-title">Contact the DCE's Office</h2><div class="divider"></div></div>
+      <div class="contact-grid">
+        <div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:21px;color:var(--text);margin-bottom:18px">Office Information</h3>
+          <div class="contact-item"><div class="contact-icon">📍</div><div><div class="contact-label">Address</div><div class="contact-value">District Assembly Building, Tatale<br>Northern Region, Ghana</div></div></div>
+          <div class="contact-item"><div class="contact-icon">📞</div><div><div class="contact-label">Telephone</div><div class="contact-value">+233 XXX XXX XXX</div></div></div>
+          <div class="contact-item"><div class="contact-icon">📧</div><div><div class="contact-label">Email</div><div class="contact-value">dce@tatale-district.gov.gh</div></div></div>
+          <div class="contact-item"><div class="contact-icon">🕐</div><div><div class="contact-label">Working Hours</div><div class="contact-value">Mon–Fri: 8AM–5PM · Sat: 9AM–12PM</div></div></div>
+          <a class="whatsapp-btn" href="#">💬 Chat on WhatsApp</a>
+          <div class="map-block">🗺️<span style="font-size:13px;color:var(--text-muted)">Interactive Map</span></div>
+        </div>
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom:16px">Send Us a Message</h3>
+          <div class="form-row-2"><div class="form-group"><label>Full Name</label><input type="text" placeholder="Your name"></div><div class="form-group"><label>Email</label><input type="email" placeholder="your@email.com"></div></div>
+          <div class="form-group"><label>Subject</label><input type="text" placeholder="What is this about?"></div>
+          <div class="form-group"><label>Message</label><textarea style="min-height:120px" placeholder="Your message..."></textarea></div>
+          <button class="btn btn-green" style="width:100%;justify-content:center" onclick="submitForm('contact-success')">Send Message →</button>
+          <div class="form-success" id="contact-success">✅ Message sent. We respond within 2 working days.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- SHARED FOOTER ELEMENTS -->
+<div style="background:var(--red);color:var(--white)">
+  <div class="container" style="padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+    <div style="font-weight:700;font-size:14.5px">🚨 Emergency Contacts</div>
+    <div style="display:flex;gap:22px;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-size:10px;opacity:.7;text-transform:uppercase">Police</div><div style="font-size:17px;font-weight:700">191</div></div>
+      <div style="text-align:center"><div style="font-size:10px;opacity:.7;text-transform:uppercase">Fire</div><div style="font-size:17px;font-weight:700">192</div></div>
+      <div style="text-align:center"><div style="font-size:10px;opacity:.7;text-transform:uppercase">Ambulance</div><div style="font-size:17px;font-weight:700">193</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="newsletter-section">
+  <div class="newsletter-inner">
+    <h3>Stay Updated</h3>
+    <p>Subscribe to receive district news and announcements in your inbox.</p>
+    <div class="newsletter-form"><input type="email" placeholder="Enter your email" id="newsletter-email"><button onclick="subscribeNewsletter()">Subscribe →</button></div>
+    <div id="newsletter-msg" style="color:var(--gold);font-size:13px;margin-top:10px;display:none">✅ Subscribed! Thank you.</div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+          <div style="width:42px;height:42px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:19px">🏛️</div>
+          <div><div class="footer-brand-title">Office of the DCE</div><div class="footer-brand-sub">Tatale District</div></div>
+        </div>
+        <p class="footer-brand-desc">Leading the development agenda of Tatale District with transparent governance and quality public services.</p>
+        <div class="footer-socials"><a class="social-btn" href="#">📘</a><a class="social-btn" href="#">🐦</a><a class="social-btn" href="#">📸</a><a class="social-btn" href="#">▶️</a></div>
+      </div>
+      <div class="footer-col"><h4>Quick Links</h4>
+        <a onclick="showSection('home')">Home</a><a onclick="showSection('about')">About the DCE</a>
+        <a onclick="showSection('projects')">Projects</a><a onclick="showSection('news')">News & Events</a>
+        <a onclick="showSection('gallery')">Media Gallery</a>
+      </div>
+      <div class="footer-col"><h4>Citizen Services</h4>
+        <a onclick="showSection('services')">Submit Complaint</a><a onclick="showSection('services')">Track Request</a>
+        <a onclick="showSection('investment')">Investment</a><a onclick="showSection('procurement')">Procurement</a>
+        <a onclick="showSection('downloads')">Downloads</a>
+      </div>
+      <div class="footer-col"><h4>Contact</h4>
+        <a>📍 Tatale, Northern Region</a><a>📞 +233 XXX XXX XXX</a><a>📧 dce@tatale-district.gov.gh</a>
+        <a onclick="openModal('admin-login-overlay')" class="staff-login-link">🔐 Staff / DCE Login</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Office of the DCE, Tatale District. All Rights Reserved. 🇬🇭</span>
+    <div style="display:flex;gap:14px"><a onclick="showSection('privacy')">Privacy Policy</a><a>Terms of Use</a><a>Accessibility</a></div>
+  </div>
+</footer>
+
+</div><!-- /public-app -->
+
+<!-- ════════════════════════════════════════════ -->
+<!-- ADMIN APP                                     -->
+<!-- ════════════════════════════════════════════ -->
+<div id="admin-app" style="display:none">
+  <button class="mobile-toggle-admin" onclick="toggleAdminSidebar()">☰</button>
+  <div class="sidebar" id="admin-sidebar">
+    <div class="sidebar-brand"><div class="brand-logo">TASDA</div><div class="brand-sub">Tatale District Admin</div></div>
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Overview</div>
+      <div class="a-nav-item active" onclick="showAdminPage('dashboard',this)"><span class="nav-icon">📊</span> Dashboard</div>
+      <div class="a-nav-item" onclick="showAdminPage('schedule',this)"><span class="nav-icon">📅</span> Daily Schedule</div>
+      <div class="nav-section-label">District Work</div>
+      <div class="a-nav-item" onclick="showAdminPage('projects',this)"><span class="nav-icon">🏗️</span> Projects & Budget</div>
+      <div class="a-nav-item" onclick="showAdminPage('complaints',this)"><span class="nav-icon">📢</span> Citizens Complaints</div>
+      <div class="nav-section-label">Intelligence</div>
+      <div class="a-nav-item" onclick="showAdminPage('ai-report',this)"><span class="nav-icon">🤖</span> AI Report Generator</div>
+      <div class="a-nav-item" onclick="showAdminPage('ai-advisor',this)"><span class="nav-icon">💡</span> AI Decision Advisor</div>
+      <div class="nav-section-label" id="admin-section-label" style="display:none">Administration</div>
+      <div class="a-nav-item" id="admin-nav-settings" onclick="showAdminPage('settings',this)" style="display:none"><span class="nav-icon">⚙️</span> System Settings</div>
+    </nav>
+    <div class="sidebar-user">
+      <div class="user-avatar" id="user-avatar">?</div>
+      <div><div class="user-name" id="user-name">—</div><div class="user-role" id="user-role-label">—</div></div>
+      <button class="btn-logout" onclick="doLogout()" title="Sign out">⏻</button>
+    </div>
+  </div>
+  <div class="a-main">
+    <div class="a-topbar">
+      <div class="a-topbar-title" id="admin-page-title">Dashboard</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:13px;color:var(--text-muted)" id="admin-date"></span>
+        <button class="btn btn-outline btn-sm" onclick="returnToPublicSite()">🌐 View Public Site</button>
+      </div>
+    </div>
+    <div class="a-content">
+
+      <!-- ADMIN DASHBOARD -->
+      <div class="a-page active" id="admin-page-dashboard">
+        <div class="welcome-banner">
+          <div><h2 id="admin-welcome-msg">Welcome, Your Excellency</h2><p>Here is today's overview for Tatale District</p></div>
+          <div style="font-size:42px">🏛️</div>
+        </div>
+        <div class="stats-grid-admin">
+          <div class="stat-card"><div class="stat-label">Active Projects</div><div class="stat-value" id="admin-stat-projects">0</div><div class="stat-sub">Currently ongoing</div></div>
+          <div class="stat-card green-b"><div class="stat-label">Completed Projects</div><div class="stat-value" id="admin-stat-completed">0</div><div class="stat-sub">This year 2026</div></div>
+          <div class="stat-card red-b"><div class="stat-label">Open Complaints</div><div class="stat-value" id="admin-stat-complaints">0</div><div class="stat-sub"><span class="live-feed-badge"><span class="live-dot"></span> Live from public site</span></div></div>
+          <div class="stat-card navy-b"><div class="stat-label">Budget Utilised</div><div class="stat-value">63%</div><div class="stat-sub">GH₵ 1.26M of 2M</div></div>
+        </div>
+        <div class="two-col">
+          <div class="card"><div class="card-header"><div class="card-title">Today's Schedule</div></div><div id="dash-schedule"></div></div>
+          <div class="card"><div class="card-header"><div class="card-title">Recent Activity</div></div><div id="dash-activity"></div></div>
+        </div>
+        <div class="card"><div class="card-header"><div class="card-title">Project Budget Overview</div></div><div id="dash-projects"></div></div>
+      </div>
+
+      <!-- SCHEDULE -->
+      <div class="a-page" id="admin-page-schedule">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Daily Schedule & Activities</div><button class="btn btn-green btn-sm" onclick="openModal('modal-add-schedule')">＋ Add Activity</button></div>
+          <div style="margin-bottom:16px"><input type="date" id="schedule-date-filter" style="padding:8px 12px;border:1.5px solid var(--border);border-radius:3px;font-size:13px;background:var(--surface-alt);color:var(--text)" onchange="renderSchedule()"></div>
+          <div id="schedule-list"></div>
+        </div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div class="a-page" id="admin-page-projects">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Projects & Budget Tracker</div><button class="btn btn-green btn-sm" onclick="openModal('modal-add-project')">＋ Add Project</button></div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px">Changes here sync live to the public Projects page.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Project</th><th>Community</th><th>Budget (GH₵)</th><th>Progress</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="projects-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPLAINTS -->
+      <div class="a-page" id="admin-page-complaints">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Citizens Complaints & Feedback</div><button class="btn btn-green btn-sm" onclick="openModal('modal-add-complaint')">＋ Log Complaint</button></div>
+          <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:14px"><span class="live-feed-badge"><span class="live-dot"></span> Includes complaints submitted live by citizens via the public website</span></p>
+          <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap">
+            <button class="btn btn-outline btn-sm" onclick="filterComplaints('all')">All</button>
+            <button class="btn btn-outline btn-sm" onclick="filterComplaints('Open')">Open</button>
+            <button class="btn btn-outline btn-sm" onclick="filterComplaints('In Progress')">In Progress</button>
+            <button class="btn btn-outline btn-sm" onclick="filterComplaints('Resolved')">Resolved</button>
+          </div>
+          <div id="complaints-list"></div>
+        </div>
+      </div>
+
+      <!-- AI REPORT -->
+      <div class="a-page" id="admin-page-ai-report">
+        <div class="card">
+          <div class="card-header"><div class="card-title">AI Report Generator</div></div>
+          <div class="form-row-2">
+            <div class="form-group"><label>Report Type</label><select id="report-type"><option value="monthly">Monthly Progress Report</option><option value="project">Project Status Report</option><option value="complaint">Complaints Summary</option><option value="budget">Budget Utilisation Report</option><option value="executive">Executive Summary for Ministry</option></select></div>
+            <div class="form-group"><label>Period</label><select id="report-period"><option>June 2026</option><option>May 2026</option><option>Q2 2026</option><option>Full Year 2026</option></select></div>
+          </div>
+          <div class="form-group"><label>Additional Context</label><textarea id="report-context" placeholder="Notes for the AI..."></textarea></div>
+          <button class="btn btn-gold" onclick="generateReport()">🤖 Generate Report with AI</button>
+        </div>
+        <div class="card" id="report-output-card" style="display:none;margin-top:20px">
+          <div class="card-header"><div class="card-title">Generated Report</div><button class="btn btn-outline btn-sm" onclick="copyReport()">📋 Copy</button></div>
+          <div class="ai-label"><span class="ai-spinner" id="report-spinner" style="display:none"></span> AI Output — Tatale District</div>
+          <div class="ai-output" id="report-output"></div>
+        </div>
+      </div>
+
+      <!-- AI ADVISOR -->
+      <div class="a-page" id="admin-page-ai-advisor">
+        <div class="card">
+          <div class="card-header"><div class="card-title">AI Decision Advisor</div></div>
+          <p style="font-size:13.5px;color:var(--text-muted);margin-bottom:18px">Ask about district management, policy, or project decisions.</p>
+          <div id="advisor-chat" style="min-height:200px;margin-bottom:16px;display:flex;flex-direction:column;gap:12px"></div>
+          <div style="display:flex;gap:10px">
+            <input type="text" id="advisor-input" placeholder="Ask a question..." style="flex:1;padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius);font-size:14px;background:var(--surface-alt);color:var(--text);outline:none" onkeydown="if(event.key==='Enter')askAdvisor()">
+            <button class="btn btn-gold" onclick="askAdvisor()">Ask AI →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="a-page" id="admin-page-settings">
+        <div class="card">
+          <div class="card-header"><div class="card-title">System Settings</div></div>
+          <div class="form-group"><label>DCE Full Name</label><input type="text" id="setting-dce-name" value="Hon. District Chief Executive"></div>
+          <div class="form-group"><label>Anthropic API Key (for AI features)</label><input type="password" id="setting-api-key" placeholder="sk-ant-..."></div>
+          <button class="btn btn-green" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FLOATING -->
+<div class="float-wa" title="Chat on WhatsApp">💬</div>
+<div class="back-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-register">
+  <div class="modal-box"><div class="modal-header"><div class="modal-title">Register Event Attendance</div><button class="modal-close" onclick="closeModal('modal-register')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Full Name</label><input type="text"></div>
+      <div class="form-group"><label>Phone</label><input type="text"></div>
+      <div class="form-group"><label>Community</label><input type="text"></div>
+      <button class="btn btn-green" style="width:100%" onclick="closeModal('modal-register');alert('Registered! See you there.')">Confirm Registration →</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-schedule">
+  <div class="modal-box"><div class="modal-header"><div class="modal-title">Add Activity</div><button class="modal-close" onclick="closeModal('modal-add-schedule')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row-2"><div class="form-group"><label>Date</label><input type="date" id="sched-date"></div><div class="form-group"><label>Time</label><input type="time" id="sched-time"></div></div>
+      <div class="form-group"><label>Activity Title</label><input type="text" id="sched-title"></div>
+      <div class="form-group"><label>Location</label><input type="text" id="sched-loc"></div>
+      <div class="form-group"><label>Category</label><select id="sched-cat"><option>Official Meeting</option><option>Field Visit</option><option>Community Durbar</option><option>Government Function</option><option>Internal Office</option></select></div>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-schedule')">Cancel</button>
+      <button class="btn btn-green" onclick="addSchedule()">Save Activity</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-project">
+  <div class="modal-box"><div class="modal-header"><div class="modal-title">Add Project</div><button class="modal-close" onclick="closeModal('modal-add-project')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Project Name</label><input type="text" id="proj-name"></div>
+      <div class="form-row-2"><div class="form-group"><label>Community</label><input type="text" id="proj-community"></div>
+        <div class="form-group"><label>Sector</label><select id="proj-sector"><option>Water & Sanitation</option><option>Roads & Infrastructure</option><option>Education</option><option>Health</option><option>Agriculture</option></select></div></div>
+      <div class="form-row-2"><div class="form-group"><label>Budget (GH₵)</label><input type="number" id="proj-budget"></div><div class="form-group"><label>Progress (%)</label><input type="number" id="proj-progress" min="0" max="100"></div></div>
+      <div class="form-group"><label>Status</label><select id="proj-status"><option>Planned</option><option>Ongoing</option><option>Completed</option><option>Stalled</option></select></div>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-project')">Cancel</button>
+      <button class="btn btn-green" onclick="addProject()">Save Project</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-complaint">
+  <div class="modal-box"><div class="modal-header"><div class="modal-title">Log Citizen Complaint</div><button class="modal-close" onclick="closeModal('modal-add-complaint')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row-2"><div class="form-group"><label>Citizen Name</label><input type="text" id="comp-name"></div><div class="form-group"><label>Phone</label><input type="text" id="comp-phone"></div></div>
+      <div class="form-row-2"><div class="form-group"><label>Community</label><input type="text" id="comp-community"></div>
+        <div class="form-group"><label>Category</label><select id="comp-cat"><option>Roads & Infrastructure</option><option>Water & Sanitation</option><option>Education</option><option>Health</option><option>Other</option></select></div></div>
+      <div class="form-group"><label>Priority</label><select id="comp-priority"><option>Normal</option><option>Urgent</option><option>Critical</option></select></div>
+      <div class="form-group"><label>Description</label><textarea id="comp-desc"></textarea></div>
+    </div>
+    <div style="padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeModal('modal-add-complaint')">Cancel</button>
+      <button class="btn btn-green" onclick="addComplaint()">Log Complaint</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════ SHARED DATA (single source of truth) ════════
+let currentUser = null;
+let apiKey = localStorage.getItem('tasda_apikey') || '';
+let dceNameSetting = localStorage.getItem('tasda_dcename') || 'Hon. District Chief Executive';
+
+let projects = [
+  { id:1, name:'Borehole Construction — Sanguli', community:'Sanguli', sector:'Water & Sanitation', budget:120000, progress:75, status:'Ongoing', notes:'Contractor: Aqua Works Ltd', desc:'Provision of safe, potable water for over 2,000 residents.', icon:'💧', cls:'water' },
+  { id:2, name:'Nakpayili-Tatale Feeder Road', community:'Nakpayili', sector:'Roads & Infrastructure', budget:450000, progress:40, status:'Ongoing', notes:'Ghana Highway Authority', desc:'Rehabilitation of the 18km feeder road connecting communities.', icon:'🛣️', cls:'road' },
+  { id:3, name:'JHS Block — Gbungbaliga', community:'Gbungbaliga', sector:'Education', budget:180000, progress:100, status:'Completed', notes:'3-unit classroom block', desc:'New classroom block serving over 300 students.', icon:'🏫', cls:'edu' },
+  { id:4, name:'CHPS Compound Renovation', community:'Tatale', sector:'Health', budget:90000, progress:10, status:'Planned', notes:'', desc:'Renovation to improve healthcare delivery in Tatale.', icon:'🏥', cls:'health' },
+  { id:5, name:'Irrigation Scheme — Nakpayili', community:'Nakpayili', sector:'Agriculture', budget:200000, progress:55, status:'Ongoing', notes:'MOFA/DACF', desc:'Small-scale irrigation for 200 farm families.', icon:'🌾', cls:'agric' },
+];
+
+let complaints = [
+  { id:1, name:'Alhassan Ibrahim', phone:'0244123456', community:'Sanguli', cat:'Water & Sanitation', priority:'Urgent', desc:'Community borehole broken for 3 months. We walk 5km for water.', status:'Open', date:'2026-06-20', ref:'TDA-1001' },
+  { id:2, name:'Mariama Fuseini', phone:'0507654321', community:'Nakpayili', cat:'Roads & Infrastructure', priority:'Normal', desc:'Road to our farm floods every rainy season, destroying crops.', status:'In Progress', date:'2026-06-15', ref:'TDA-1002' },
+  { id:3, name:'Yakubu Dramani', phone:'0201234567', community:'Tatale', cat:'Education', priority:'Normal', desc:'No furniture in the new JHS classroom block.', status:'Open', date:'2026-06-25', ref:'TDA-1003' },
+  { id:4, name:'Abiba Mahama', phone:'0244987654', community:'Gbungbaliga', cat:'Health', priority:'Critical', desc:'CHPS compound has no nurse for 2 months.', status:'Open', date:'2026-06-27', ref:'TDA-1004' },
+  { id:5, name:'Seidu Anta', phone:'0271234890', community:'Sanguli', cat:'Market & Trade', priority:'Normal', desc:'Market shed roof leaking badly, damaging goods.', status:'Resolved', date:'2026-06-10', ref:'TDA-1005' },
+];
+
+let schedules = [
+  { id:1, date:'2026-06-30', time:'08:00', title:'Morning Briefing with IT Personnel', loc:'DCE Office, Tatale', cat:'Internal Office' },
+  { id:2, date:'2026-06-30', time:'10:30', title:'Community Durbar — Nakpayili', loc:'Nakpayili Town Centre', cat:'Community Durbar' },
+  { id:3, date:'2026-06-30', time:'14:00', title:'Budget Review Meeting', loc:'District Assembly Hall', cat:'Official Meeting' },
+];
+
+const deptsData = [
+  { icon:'🏛️', name:'Administration', head:'District Coordinating Director', desc:'Coordinates administrative functions.' },
+  { icon:'💰', name:'Finance', head:'District Finance Officer', desc:'Manages revenue and financial reporting.' },
+  { icon:'🏗️', name:'Works', head:'District Works Engineer', desc:'Oversees infrastructure and roads.' },
+  { icon:'🌾', name:'Agriculture', head:'District Agric Officer', desc:'Promotes farming and agribusiness.' },
+  { icon:'📐', name:'Physical Planning', head:'District Planning Officer', desc:'Manages land use and permits.' },
+  { icon:'📚', name:'Education', head:'Education Directorate', desc:'Coordinates education delivery.' },
+  { icon:'🏥', name:'Health', head:'District Health Director', desc:'Oversees public health services.' },
+  { icon:'🤝', name:'Social Welfare', head:'Social Welfare Officer', desc:'Delivers social protection services.' },
+];
+
+const staffData = [
+  { avatar:'👩‍💼', name:'Hon. District Chief Executive', role:'DCE', contact:'dce@tatale-district.gov.gh' },
+  { avatar:'👨‍💼', name:'District Coordinating Director', role:'Administration', contact:'dcd@tatale-district.gov.gh' },
+  { avatar:'👩‍💻', name:'IT Administrator', role:'IT & Systems', contact:'it@tatale-district.gov.gh' },
+  { avatar:'👨‍🌾', name:'Agric Extension Officer', role:'Agriculture Dept', contact:'agric@tatale-district.gov.gh' },
+  { avatar:'👩‍⚕️', name:'District Health Director', role:'Health Dept', contact:'health@tatale-district.gov.gh' },
+  { avatar:'👨‍🏫', name:'Education Director', role:'Education Dept', contact:'edu@tatale-district.gov.gh' },
+];
+
+let advisorHistory = [];
+
+// ════════ LIVE CLOCK & WEATHER ════════
+function updateClock(){
+  const now = new Date();
+  document.getElementById('live-time').textContent = now.toLocaleTimeString('en-GH',{hour:'2-digit',minute:'2-digit'}) + ' GMT';
+  const ad = document.getElementById('admin-date');
+  if(ad) ad.textContent = now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+updateClock(); setInterval(updateClock,30000);
+
+async function loadWeather(){
+  try{
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=8.4&longitude=0.07&current_weather=true');
+    const data = await res.json();
+    const t = Math.round(data.current_weather.temperature);
+    document.getElementById('weather-display').textContent = `Tatale ${t}°C`;
+  }catch(e){
+    document.getElementById('weather-display').textContent = 'Tatale ~32°C';
+  }
+}
+loadWeather();
+
+// ════════ DARK MODE ════════
+function toggleDark(){
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  localStorage.setItem('tasda_dark', isDark ? '1':'0');
+  document.getElementById('dark-btn').textContent = isDark ? '☀️ Light' : '🌙 Dark';
+}
+if(localStorage.getItem('tasda_dark')==='1'){ document.documentElement.classList.add('dark'); }
+
+// ════════ LANGUAGE SWITCH ════════
+function toggleLang(){
+  alert('🌐 Local language support (Dagbani, Twi) is coming soon. Currently displaying in English.');
+}
+
+// ════════ SEARCH ════════
+const searchIndex = [
+  {label:'About the DCE', section:'about'}, {label:'District Information', section:'district'},
+  {label:'Projects & Budget Tracker', section:'projects'}, {label:'News & Events', section:'news'},
+  {label:'Departments', section:'departments'}, {label:'Media Gallery', section:'gallery'},
+  {label:'Citizen Services', section:'services'}, {label:'Staff Directory', section:'staff'},
+  {label:'Investment Opportunities', section:'investment'}, {label:'Procurement & Tenders', section:'procurement'},
+  {label:'Downloads', section:'downloads'}, {label:'Contact Us', section:'contact'}, {label:'Privacy Policy', section:'privacy'},
+];
+function doSearch(q){
+  const box = document.getElementById('search-results');
+  if(!q || q.length<2){ box.classList.remove('show'); return; }
+  const matches = searchIndex.filter(i => i.label.toLowerCase().includes(q.toLowerCase()));
+  if(!matches.length){ box.innerHTML = '<a>No results found</a>'; box.classList.add('show'); return; }
+  box.innerHTML = matches.map(m => `<a onclick="showSection('${m.section}')">${m.label}</a>`).join('');
+  box.classList.add('show');
+}
+
+// ════════ PUBLIC NAV ════════
+function showSection(id, el){
+  document.getElementById('home-sections').style.display = 'none';
+  document.querySelectorAll('#public-app .page-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  if(id==='home'){
+    document.getElementById('home-sections').style.display='block';
+  } else {
+    const target = document.getElementById('section-'+id);
+    if(target) target.classList.add('active');
+  }
+  if(el) el.classList.add('active');
+  if(id==='projects') renderPublicProjects('all');
+  if(id==='departments') renderDepts();
+  if(id==='staff') renderStaff();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function toggleMobileNav(){ document.getElementById('mobile-nav').classList.toggle('open'); }
+
+// ════════ MODALS ════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
+
+// ════════ ADMIN LOGIN / LOGOUT ════════
+function doLogin(){
+  const role = document.getElementById('login-role').value;
+  const pass = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  const creds = { dce:'dce123', it:'it123' };
+  if(!role){ err.textContent='Please select a role.'; err.style.display='block'; return; }
+  if(pass !== creds[role]){ err.textContent='Wrong password.'; err.style.display='block'; return; }
+  currentUser = role;
+  err.style.display='none';
+  closeModal('admin-login-overlay');
+  document.getElementById('public-app').style.display='none';
+  document.getElementById('admin-app').style.display='flex';
+  setupAdminUser();
+  renderAdminAll();
+}
+function doLogout(){
+  currentUser = null;
+  document.getElementById('admin-app').style.display='none';
+  document.getElementById('public-app').style.display='block';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-role').value='';
+}
+function returnToPublicSite(){
+  document.getElementById('admin-app').style.display='none';
+  document.getElementById('public-app').style.display='block';
+}
+function setupAdminUser(){
+  if(currentUser==='dce'){
+    document.getElementById('user-name').textContent = dceNameSetting;
+    document.getElementById('user-role-label').textContent = 'District Chief Executive';
+    document.getElementById('user-avatar').textContent = 'DCE';
+    document.getElementById('admin-welcome-msg').textContent = `Welcome, ${dceNameSetting}`;
+    document.getElementById('admin-section-label').style.display='none';
+    document.getElementById('admin-nav-settings').style.display='none';
+  } else {
+    document.getElementById('user-name').textContent = 'IT Administrator';
+    document.getElementById('user-role-label').textContent = 'IT Personnel';
+    document.getElementById('user-avatar').textContent = 'IT';
+    document.getElementById('admin-welcome-msg').textContent = 'IT Admin Console';
+    document.getElementById('admin-section-label').style.display='block';
+    document.getElementById('admin-nav-settings').style.display='flex';
+  }
+}
+function toggleAdminSidebar(){ document.getElementById('admin-sidebar').classList.toggle('open'); }
+
+// ════════ ADMIN NAV ════════
+function showAdminPage(id, el){
+  document.querySelectorAll('.a-page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('admin-page-'+id).classList.add('active');
+  document.querySelectorAll('.a-nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const titles = { dashboard:'Dashboard', schedule:'Daily Schedule', projects:'Projects & Budget', complaints:'Citizens Complaints', 'ai-report':'AI Report Generator', 'ai-advisor':'AI Decision Advisor', settings:'System Settings' };
+  document.getElementById('admin-page-title').textContent = titles[id]||id;
+  if(id==='schedule') renderSchedule();
+  if(window.innerWidth<768) document.getElementById('admin-sidebar').classList.remove('open');
+}
+
+// ════════ RENDER: ADMIN ════════
+function renderAdminAll(){
+  renderAdminDashboard();
+  renderProjectsTable();
+  renderComplaints('all');
+}
+function renderAdminDashboard(){
+  document.getElementById('admin-stat-projects').textContent = projects.filter(p=>p.status==='Ongoing').length;
+  document.getElementById('admin-stat-completed').textContent = projects.filter(p=>p.status==='Completed').length;
+  document.getElementById('admin-stat-complaints').textContent = complaints.filter(c=>c.status!=='Resolved').length;
+  const today = new Date().toISOString().split('T')[0];
+  const todaySched = schedules.filter(s=>s.date===today).slice(0,3);
+  document.getElementById('dash-schedule').innerHTML = todaySched.length ? todaySched.map(s=>`
+    <div class="schedule-item"><div class="schedule-time">${s.time}</div><div><div class="schedule-title">${s.title}</div><div class="schedule-loc">📍 ${s.loc}</div></div></div>`).join('') : '<p style="color:var(--text-muted);font-size:13px;padding:14px 0">No activities scheduled for today.</p>';
+  const acts = [
+    {dot:'green-d',text:'Borehole project progress updated to 75%',time:'Today, 09:14'},
+    {dot:'red-d',text:'New complaint received via public website',time:'Today, 08:30'},
+    {dot:'',text:'Q2 budget review meeting added to schedule',time:'Yesterday'},
+  ];
+  document.getElementById('dash-activity').innerHTML = acts.map(a=>`<div class="activity-item"><div class="activity-dot ${a.dot}"></div><div><div class="activity-text">${a.text}</div><div class="activity-time">${a.time}</div></div></div>`).join('');
+  document.getElementById('dash-projects').innerHTML = projects.slice(0,4).map(p=>`
+    <div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12.5px;font-weight:600">${p.name}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--text-muted)">${p.progress}%</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%"></div></div></div>`).join('');
+}
+function renderSchedule(){
+  const filter = document.getElementById('schedule-date-filter').value;
+  const filtered = schedules.filter(s=>!filter||s.date===filter).sort((a,b)=>a.time.localeCompare(b.time));
+  document.getElementById('schedule-list').innerHTML = filtered.length ? filtered.map(s=>`
+    <div class="schedule-item"><div class="schedule-time">${s.time}</div><div><div class="schedule-title">${s.title}</div><div class="schedule-loc">📍 ${s.loc}</div></div>
+    <button class="btn btn-ghost btn-sm" onclick="deleteSchedule(${s.id})">🗑</button></div>`).join('') : '<p style="color:var(--text-muted);font-size:13px;padding:20px 0;text-align:center">No activities for this date.</p>';
+}
+function addSchedule(){
+  const s = { id:Date.now(), date:document.getElementById('sched-date').value, time:document.getElementById('sched-time').value, title:document.getElementById('sched-title').value, loc:document.getElementById('sched-loc').value, cat:document.getElementById('sched-cat').value };
+  if(!s.title) return alert('Enter an activity title.');
+  schedules.push(s); closeModal('modal-add-schedule'); renderSchedule(); renderAdminDashboard();
+}
+function deleteSchedule(id){ schedules = schedules.filter(s=>s.id!==id); renderSchedule(); renderAdminDashboard(); }
+
+function renderProjectsTable(){
+  const statusBadge = {'Completed':'badge-green','Ongoing':'badge-blue','Planned':'badge-grey','Stalled':'badge-red'};
+  document.getElementById('projects-tbody').innerHTML = projects.map(p=>`
+    <tr><td><div style="font-weight:600;font-size:12.5px">${p.name}</div><div style="font-size:10.5px;color:var(--text-muted)">${p.sector}</div></td>
+    <td style="font-size:12.5px">${p.community}</td>
+    <td style="font-family:'JetBrains Mono',monospace;font-size:12.5px">GH₵ ${p.budget.toLocaleString()}</td>
+    <td style="min-width:110px"><div class="progress-bar" style="margin-bottom:3px"><div class="progress-fill" style="width:${p.progress}%"></div></div><span style="font-size:10.5px;color:var(--text-muted)">${p.progress}%</span></td>
+    <td><span class="badge ${statusBadge[p.status]}">${p.status}</span></td>
+    <td><button class="btn btn-outline btn-sm" onclick="updateProgress(${p.id})">Update %</button> <button class="btn btn-ghost btn-sm" onclick="deleteProjectAdmin(${p.id})">🗑</button></td></tr>`).join('');
+}
+function addProject(){
+  const sectorIconMap = {'Water & Sanitation':['💧','water'],'Roads & Infrastructure':['🛣️','road'],'Education':['🏫','edu'],'Health':['🏥','health'],'Agriculture':['🌾','agric']};
+  const sector = document.getElementById('proj-sector').value;
+  const [icon,cls] = sectorIconMap[sector] || ['🏗️','road'];
+  const p = { id:Date.now(), name:document.getElementById('proj-name').value, community:document.getElementById('proj-community').value, sector, budget:parseFloat(document.getElementById('proj-budget').value)||0, progress:parseInt(document.getElementById('proj-progress').value)||0, status:document.getElementById('proj-status').value, notes:'', desc:'District development project for '+document.getElementById('proj-community').value+'.', icon, cls };
+  if(!p.name) return alert('Enter a project name.');
+  projects.push(p); closeModal('modal-add-project'); renderProjectsTable(); renderAdminDashboard(); renderPublicProjects('all');
+}
+function updateProgress(id){
+  const val = prompt('Enter new progress percentage (0-100):'); if(val===null) return;
+  const num = Math.min(100,Math.max(0,parseInt(val)));
+  const p = projects.find(p=>p.id===id);
+  if(p){ p.progress=num; if(num===100) p.status='Completed'; }
+  renderProjectsTable(); renderAdminDashboard(); renderPublicProjects('all');
+}
+function deleteProjectAdmin(id){ projects = projects.filter(p=>p.id!==id); renderProjectsTable(); renderAdminDashboard(); renderPublicProjects('all'); }
+
+function renderComplaints(filter){
+  const filtered = filter==='all' ? complaints : complaints.filter(c=>c.status===filter);
+  const pBadge = {'Normal':'badge-blue','Urgent':'badge-yellow','Critical':'badge-red'};
+  const sBadge = {'Open':'badge-red','In Progress':'badge-yellow','Resolved':'badge-green'};
+  document.getElementById('complaints-list').innerHTML = filtered.map(c=>`
+    <div class="complaint-card"><div class="complaint-top"><div><div class="complaint-name">${c.name} <span style="font-weight:400;color:var(--text-muted)">— ${c.community}</span></div><div class="complaint-community">${c.cat} · ${c.date} · ${c.ref||''}</div></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="badge ${pBadge[c.priority]}">${c.priority}</span><span class="badge ${sBadge[c.status]}">${c.status}</span></div></div>
+    <div class="complaint-desc">${c.desc}</div>
+    <div class="complaint-actions">
+      ${c.status!=='In Progress'&&c.status!=='Resolved'?`<button class="btn btn-outline btn-sm" onclick="setComplaintStatus(${c.id},'In Progress')">Mark In Progress</button>`:''}
+      ${c.status!=='Resolved'?`<button class="btn btn-outline btn-sm" onclick="setComplaintStatus(${c.id},'Resolved')">✓ Resolve</button>`:''}
+      <button class="btn btn-outline btn-sm" onclick="aiComplaintResponse(${c.id})">🤖 AI Response</button>
+      <button class="btn btn-ghost btn-sm" onclick="deleteComplaint(${c.id})">🗑</button>
+    </div>
+    ${c.aiResponse?`<div style="margin-top:11px;background:var(--surface-alt);border-radius:6px;padding:11px;font-size:12.5px;border-left:3px solid var(--gold)"><strong style="color:var(--green);font-size:10.5px;text-transform:uppercase">AI Suggested Response</strong><br><br>${c.aiResponse}</div>`:''}
+    </div>`).join('') || '<p style="color:var(--text-muted);font-size:13px;padding:20px;text-align:center">No complaints found.</p>';
+}
+function filterComplaints(f){ renderComplaints(f); }
+function addComplaint(){
+  const c = { id:Date.now(), name:document.getElementById('comp-name').value, phone:document.getElementById('comp-phone').value, community:document.getElementById('comp-community').value, cat:document.getElementById('comp-cat').value, priority:document.getElementById('comp-priority').value, desc:document.getElementById('comp-desc').value, status:'Open', date:new Date().toISOString().split('T')[0], ref:'TDA-'+Math.floor(1000+Math.random()*9000) };
+  if(!c.name||!c.desc) return alert('Fill name and description.');
+  complaints.unshift(c); closeModal('modal-add-complaint'); renderComplaints('all'); renderAdminDashboard();
+}
+function setComplaintStatus(id,status){ const c=complaints.find(c=>c.id===id); if(c) c.status=status; renderComplaints('all'); renderAdminDashboard(); updatePublicDashboardStats(); }
+function deleteComplaint(id){ complaints = complaints.filter(c=>c.id!==id); renderComplaints('all'); renderAdminDashboard(); }
+
+async function aiComplaintResponse(id){
+  const c = complaints.find(c=>c.id===id); if(!c) return;
+  const key = getApiKey(); if(!key) return alert('Add your Anthropic API key in System Settings.');
+  c.aiResponse = '⏳ Generating...'; renderComplaints('all');
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:400,messages:[{role:'user',content:`You are an assistant to the DCE of Tatale District, Ghana. A citizen submitted: Name: ${c.name}, Community: ${c.community}, Category: ${c.cat}, Complaint: ${c.desc}. Write a brief, professional, empathetic official response under 120 words.`}]})});
+    const data = await res.json(); c.aiResponse = data.content?.[0]?.text || 'Could not generate response.';
+  }catch(e){ c.aiResponse = 'Error: check API key.'; }
+  renderComplaints('all');
+}
+async function generateReport(){
+  const key = getApiKey(); if(!key) return alert('Add your Anthropic API key in System Settings first.');
+  const type = document.getElementById('report-type').value, period = document.getElementById('report-period').value, context = document.getElementById('report-context').value;
+  const typeLabels = {monthly:'Monthly Progress Report',project:'Project Status Report',complaint:'Complaints Summary',budget:'Budget Utilisation Report',executive:'Executive Summary for Ministry'};
+  const projectSummary = projects.map(p=>`- ${p.name} (${p.community}): ${p.progress}% complete, GH₵${p.budget.toLocaleString()}, Status: ${p.status}`).join('\n');
+  const complaintSummary = `Total: ${complaints.length}, Open: ${complaints.filter(c=>c.status==='Open').length}, In Progress: ${complaints.filter(c=>c.status==='In Progress').length}, Resolved: ${complaints.filter(c=>c.status==='Resolved').length}`;
+  document.getElementById('report-output-card').style.display='block'; document.getElementById('report-output').textContent=''; document.getElementById('report-spinner').style.display='inline-block';
+  const prompt = `You are a government report writer for Tatale District Assembly, Ghana. Write a formal ${typeLabels[type]} for ${period}.\nProjects:\n${projectSummary}\nComplaints: ${complaintSummary}\nBudget: GH₵2,000,000 total, GH₵1,260,000 utilised (63%)\n${context?'Context: '+context:''}\nInclude sections: Executive Summary, Key Achievements, Project Status, Citizens Concerns, Budget Performance, Recommendations.`;
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
+    const data = await res.json(); document.getElementById('report-output').textContent = data.content?.[0]?.text || 'Could not generate report.';
+  }catch(e){ document.getElementById('report-output').textContent = 'Error: '+e.message; }
+  document.getElementById('report-spinner').style.display='none';
+}
+function copyReport(){ navigator.clipboard.writeText(document.getElementById('report-output').textContent).then(()=>alert('Copied!')); }
+
+async function askAdvisor(){
+  const input = document.getElementById('advisor-input'); const question = input.value.trim(); if(!question) return;
+  const key = getApiKey(); if(!key) return alert('Add your Anthropic API key in System Settings first.');
+  input.value=''; addAdvisorMessage('user',question);
+  const thinkingId = 'thinking-'+Date.now(); addAdvisorMessage('ai','⏳ Analysing...',thinkingId);
+  const systemPrompt = `You are an AI advisor to the DCE of Tatale District, Ghana. Expert in local government, DACF funding, rural development. Be concise and practical. District: ${projects.length} active projects, ${complaints.filter(c=>c.status!=='Resolved').length} open complaints, 63% budget utilisation.`;
+  advisorHistory.push({role:'user',content:question});
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,system:systemPrompt,messages:advisorHistory})});
+    const data = await res.json(); const reply = data.content?.[0]?.text || 'Could not get a response.';
+    advisorHistory.push({role:'assistant',content:reply}); document.getElementById(thinkingId).textContent = reply;
+  }catch(e){ document.getElementById(thinkingId).textContent = 'Error: '+e.message; }
+}
+function addAdvisorMessage(role,text,id){
+  const chat = document.getElementById('advisor-chat'); const div = document.createElement('div');
+  div.style.cssText = `padding:13px 17px;border-radius:6px;font-size:13.5px;line-height:1.6;max-width:90%;white-space:pre-wrap;${role==='user'?'background:var(--green);color:white;align-self:flex-end;margin-left:auto':'background:var(--surface-alt);border:1px solid var(--border);color:var(--text)'}`;
+  const content = document.createElement('div'); content.textContent = text; if(id) content.id = id;
+  div.appendChild(content); chat.appendChild(div); chat.scrollTop = chat.scrollHeight;
+}
+function saveSettings(){
+  apiKey = document.getElementById('setting-api-key').value;
+  dceNameSetting = document.getElementById('setting-dce-name').value || dceNameSetting;
+  localStorage.setItem('tasda_apikey',apiKey); localStorage.setItem('tasda_dcename',dceNameSetting);
+  document.getElementById('hero-dce-name').textContent = dceNameSetting;
+  document.getElementById('about-dce-name').textContent = dceNameSetting;
+  alert('Settings saved.'); if(currentUser) setupAdminUser();
+}
+function getApiKey(){ return apiKey || document.getElementById('setting-api-key')?.value; }
+
+// ════════ RENDER: PUBLIC ════════
+function renderPublicProjects(filter){
+  const data = filter==='all' ? projects : projects.filter(p=>p.sector===filter);
+  const badge = {'Ongoing':'badge-yellow','Completed':'badge-green','Planned':'badge-blue','Stalled':'badge-red'};
+  document.getElementById('public-projects-grid').innerHTML = data.map(p=>`
+    <div class="project-card"><div class="project-img ${p.cls}">${p.icon}<div class="project-badge ${badge[p.status]}">${p.status}</div></div>
+    <div class="project-body"><div class="project-sector">${p.sector}</div><div class="project-name">${p.name}</div><div class="project-desc">${p.desc}</div>
+    <div class="project-meta"><div class="project-budget">GH₵ ${p.budget.toLocaleString()}</div></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%"></div></div><div class="progress-label"><span>Progress</span><span>${p.progress}%</span></div></div></div>`).join('');
+}
+function filterProjects(sector,btn){
+  document.querySelectorAll('#section-projects .filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderPublicProjects(sector);
+}
+function renderDepts(){
+  document.getElementById('dept-grid').innerHTML = deptsData.map(d=>`<div class="dept-card"><div class="dept-icon">${d.icon}</div><div class="dept-name">${d.name}</div><div class="dept-head">${d.head}</div><div class="dept-desc">${d.desc}</div></div>`).join('');
+}
+function renderStaff(){
+  document.getElementById('staff-grid').innerHTML = staffData.map(s=>`<div class="staff-card"><div class="staff-avatar">${s.avatar}</div><div class="staff-name">${s.name}</div><div class="staff-role">${s.role}</div><div class="staff-contact">📧 ${s.contact}</div></div>`).join('');
+}
+
+// PUBLIC COMPLAINT SUBMISSION → feeds straight into admin's shared array
+function submitPublicComplaint(){
+  const name = document.getElementById('pub-comp-name').value;
+  const desc = document.getElementById('pub-comp-desc').value;
+  if(!name || !desc) return alert('Please enter your name and complaint description.');
+  const ref = 'TDA-'+Math.floor(1000+Math.random()*9000);
+  complaints.unshift({
+    id: Date.now(), name, phone: document.getElementById('pub-comp-phone').value,
+    community: document.getElementById('pub-comp-community').value, cat: document.getElementById('pub-comp-cat').value,
+    priority:'Normal', desc, status:'Open', date:new Date().toISOString().split('T')[0], ref
+  });
+  document.getElementById('pub-comp-ref').textContent = ref;
+  document.getElementById('pub-complaint-success').style.display='block';
+  ['pub-comp-name','pub-comp-phone','pub-comp-community','pub-comp-desc'].forEach(id=>document.getElementById(id).value='');
+  updatePublicDashboardStats();
+  if(currentUser) renderComplaints('all'); // live update if admin happens to be open
+}
+function submitForm(successId){
+  const el = document.getElementById(successId);
+  if(el){ el.style.display='block'; setTimeout(()=>el.style.display='none',5000); }
+}
+function trackRequest(){
+  const val = document.getElementById('track-input').value.trim();
+  const el = document.getElementById('track-result');
+  if(!val) return;
+  const found = complaints.find(c => c.ref && c.ref.toLowerCase() === val.toLowerCase());
+  el.style.display='block';
+  if(found){
+    el.style.cssText = 'display:block;background:#D4EDDA;color:#155724;padding:13px 16px;border-radius:6px;font-size:13.5px;font-weight:500';
+    el.innerHTML = `✅ <strong>${found.ref}</strong> — Status: <strong>${found.status}</strong><br><span style="font-size:11.5px;opacity:.85">Category: ${found.cat} · Submitted ${found.date}</span>`;
+  } else {
+    el.style.cssText = 'display:block;background:#F8D7DA;color:#721C24;padding:13px 16px;border-radius:6px;font-size:13.5px;font-weight:500';
+    el.innerHTML = `⚠️ No request found with reference <strong>${val}</strong>. Please check and try again.`;
+  }
+}
+function subscribeNewsletter(){
+  const email = document.getElementById('newsletter-email').value; if(!email) return;
+  document.getElementById('newsletter-msg').style.display='block'; document.getElementById('newsletter-email').value='';
+}
+
+// ════════ PUBLIC DASHBOARD STATS ════════
+function updatePublicDashboardStats(){
+  document.getElementById('pub-completed-projects').textContent = projects.filter(p=>p.status==='Completed').length;
+  document.getElementById('pub-open-complaints').textContent = complaints.filter(c=>c.status!=='Resolved').length;
+  const pct = Math.round((projects.filter(p=>p.status==='Ongoing').length / Math.max(projects.length,1))*100);
+  document.getElementById('hero-stat-projects').textContent = projects.filter(p=>p.status==='Ongoing').length + '+';
+}
+function initVisitorCounter(){
+  let count = parseInt(localStorage.getItem('tasda_visitors')||'0');
+  const today = new Date().toISOString().split('T')[0];
+  const lastDate = localStorage.getItem('tasda_visitor_date');
+  if(lastDate !== today){ count = Math.floor(40 + Math.random()*60); localStorage.setItem('tasda_visitor_date',today); }
+  else { count += 1; }
+  localStorage.setItem('tasda_visitors', count);
+  document.getElementById('pub-visitor-count').textContent = count;
+}
+
+// ════════ TICKER & EMERGENCY ════════
+document.getElementById('ticker-text').textContent = 'District Assembly budget approved for 2026 fiscal year  •  Borehole project in Sanguli reaches 75% completion  •  DCE commissions new JHS classroom block in Gbungbaliga  •  Town Hall meeting scheduled for July 15, 2026  •  Nakpayili-Tatale feeder road 40% complete  •  ';
+
+// ════════ BACK TO TOP ════════
+window.addEventListener('scroll', ()=>{ document.getElementById('back-top').classList.toggle('visible', window.scrollY>400); });
+
+// ════════ INIT ════════
+document.getElementById('hero-dce-name').textContent = dceNameSetting;
+document.getElementById('about-dce-name').textContent = dceNameSetting;
+document.getElementById('setting-dce-name').value = dceNameSetting;
+document.getElementById('setting-api-key').value = apiKey;
+renderPublicProjects('all');
+renderDepts();
+renderStaff();
+updatePublicDashboardStats();
+initVisitorCounter();
+</script>
+</body>
+</html>
